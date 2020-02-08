@@ -7,14 +7,14 @@
 // -----------------------------------------------
 
 // カードの柄 (スート) を表す Suit 型を「判別共用体」として定義します。
-// ここでは C# の enum とほぼ同様です。
+// ここでは C# などの enum と同様です。
 type Suit =
     | Spade
     | Clover
     | Heart
     | Diamond
 
-// 例として、スートの名前を取得する関数を定義します。
+// 使用例として、スートの名前を取得する関数を定義します。
 let suitToName suit =
     match suit with
     | Spade     -> "スペース"
@@ -22,28 +22,28 @@ let suitToName suit =
     | Heart     -> "ハート"
     | Diamond   -> "ダイアモンド"
 
-//  ↑  match は switch のように場合分けの構文です。ただし default 節はいりません。
-//     場合分けに漏れがあるときは、コンパイルエラーになります。
+    // ↑ match-with は switch のように場合分けの構文です。
+    //   場合分けに漏れがあるときは、コンパイルエラーになります。
 
 // 実行例
 printfn "Spade: %s" (suitToName Spade)
     //=> スペード
 
 // -----------------------------------------------
-// (2/3) 値を持つ判別共用体
+// (2/3) フィールドを持つ判別共用体
 // -----------------------------------------------
 
-// トランプのカードを表す Card 型を、「判別共用体」で定義します。
-// 判別共用体の各ケースは、C# の enum と違って、フィールドを持つことができます。
+// トランプのカードを表す Card 型を「判別共用体」として定義します。
+// 判別共用体の各ケースは、普通の enum と違って、フィールドを持つことができます。
 type Card =
     | NormalCard of suit:Suit * rank:int
     | Joker
 
-    // ↑ of の後ろがフィールドの定義です。
-    //   普通のカード(NormalCard)はスート(柄)とランク(数字)を持ちますが、
-    //   Joker は特に何も持ちません。
+    // ↑ of の後ろがフィールドの定義です。(`*` 区切り。)
+    //   普通のカード(NormalCard)はスート(柄)とランク(数字)を持ち、
+    //   Joker はフィールドを持たない定数、としています。
 
-// 値を持つケースは、コンストラクタを使ってインスタンス化できます。(new がないですが、コンストラクタです。)
+// フィールドを持つケースは、クラスのように、コンストラクタを使ってインスタンス化できます。
 let heart3 = NormalCard (Heart, 3)
 
 // 使用例として、カードの名前を取得する関数を定義します。
@@ -64,11 +64,24 @@ printfn "Joker: %s" (cardToName Joker)
 printfn "Heart3: %s" (cardToName heart3)
     //=> ハートの3
 
-// 「判別共用体」の実用的な例は、いくらでもあります。
+// 「判別共用体」の実用的な例はいくらでもあります。
 
-type Login =
-    | EmailLogin of address:string
-    | TwitterLogin of accessToken:string * accessSecret:string
+type HttpResponse =
+    | OkWithText    of text:string              // 200
+    | OkWithJson    of json:obj                 // 200
+    | Redirect      of uri:string * temp:bool   // 301 or 302
+    | InternalError of ex:Exception             // 500
+
+type BinaryTree<'T> =
+    | Node of left:BinaryTree<'T> * right:BinaryTree<'T>
+    | Leaf of value:'T
+
+type Contact =
+    | ContactWithMail
+        of address:string
+
+    | ContactWith郵送
+        of 郵便番号:string * 住所:string * 宛先:string
 
 // -----------------------------------------------
 // (3/3) 型推論
