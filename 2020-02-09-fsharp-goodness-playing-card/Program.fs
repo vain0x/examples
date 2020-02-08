@@ -70,7 +70,7 @@ type HttpResponse =
     | OkWithText    of text:string              // 200
     | OkWithJson    of json:obj                 // 200
     | Redirect      of uri:string * temp:bool   // 301 or 302
-    | InternalError of ex:Exception             // 500
+    | InternalError of ex:exn                   // 500
 
 type BinaryTree<'T> =
     | Node of left:BinaryTree<'T> * right:BinaryTree<'T>
