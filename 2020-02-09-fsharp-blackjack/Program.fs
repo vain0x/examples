@@ -12,7 +12,6 @@ open System.Threading               // ThreadLocal のため
 ///
 /// 設計: ブラックジャックではエースやキングが重要な意味を持つので、
 ///      int ではなく判別共用体を使う方が書きやすい。
-///      ケースを書く順番が値の大小関係になるので、小さい順に並べている。
 type Rank =
     | Ace
 
@@ -53,7 +52,7 @@ let rankToName rank =
 /// カードのスート(柄)の型
 ///
 /// 設計ノート: ブラックジャックではスートが意味を持たないので、文字列で OK。
-///           後から判別共用体にするのも難しくないはず。
+///           後から判別共用体にするのも難しくない。
 type Suit = string
 
 let allSuits () =
@@ -115,7 +114,7 @@ let generateDeck () =
 
 /// カードを1枚引く。
 let drawFromDeck (deck: Deck) =
-    /// ※現在の実装では、カードが尽きることはない。
+    // 現在の実装では、カードが尽きることはない。
     assert (deck.Count >= 1)
 
     let last = deck.Count - 1
@@ -131,7 +130,7 @@ let drawFromDeck (deck: Deck) =
 /// プレイヤーの手札
 type Hand = ResizeArray<Card>
 
-let newHand () = ResizeArray()
+let newHand (): Hand = ResizeArray()
 
 let addToHand card (yourHand: Hand) =
     yourHand.Add(card)
@@ -215,31 +214,12 @@ let scoreToDealerAction (score: int) =
     else
         DealerStandAction
 
-let handToDealerAction (hand: Hand) =
-    scoreToDealerAction (handToScore hand)
-
 // -----------------------------------------------
 // ゲーム進行
 // -----------------------------------------------
 
-type Phase =
-    | GameStartPhase
-
-    | YourActionPhase
-        of Deck * Hand * DealerHand
-
-    | DealerOpenPhase
-        of Deck * Hand * DealerHand
-
-    | DealerActionPhase
-        of Deck * Hand * Hand
-
-    | GameEndPhase
-        of GameResult
-
 /// エンターキーを待つ。ゲームが早く進みすぎないようにするため。
 let wait () =
-    printfn "----"
     stdin.ReadLine() |> ignore
 
 /// ユーザーの yes/no を待つ。
@@ -251,7 +231,7 @@ let confirm () =
     | _ ->
         false
 
-let youHit (deck: Deck) (yourHand: Hand) =
+let youHit deck yourHand =
     let card = drawFromDeck deck
     addToHand card yourHand
     printfn "あなたは %s を引きました。" (cardToName card)
