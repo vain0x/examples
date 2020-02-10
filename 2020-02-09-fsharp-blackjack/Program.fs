@@ -92,7 +92,7 @@ assert (List.length (allCards ()) = 13 * 4)
 let sRandom = new ThreadLocal<Random>(fun () -> Random())
 
 /// 参考: フィッシャー・イェーツのシャッフルアルゴリズム
-let shuffleArray (list: IList<Card>) =
+let shuffleList (list: IList<Card>) =
     let random = sRandom.Value
 
     let n = list.Count
@@ -109,7 +109,7 @@ type Deck = ResizeArray<Card>
 /// デックを生成する。
 let generateDeck () =
     let deck = ResizeArray(allCards ())
-    shuffleArray deck
+    shuffleList deck
     deck
 
 /// カードを1枚引く。
