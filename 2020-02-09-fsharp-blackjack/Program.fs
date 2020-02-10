@@ -154,26 +154,56 @@ let dealerHandToHand dealerHand =
 // スコアの計算
 // -----------------------------------------------
 
-let rankToScore rank =
+type Score = int
+
+/// カードの価値
+type Value =
+    | Value of baseValue:int * aceCount:int
+
+let noValue () =
+    Value (0, 0)
+
+let addValue first second =
+    match first, second with
+    | Value (firstBase, firstAce),
+        Value (secondBase, secondAce) ->
+        Value (firstBase + secondBase, firstAce + secondAce)
+
+/// いまのスコアが score のときのエース1枚の価値を評価する。
+let evaluateAce score =
+    if scoreIsBust (score + 11) then 1 else 11
+
+let evaluate value =
+    match value with
+    | Value (baseValue, aceCount) ->
+        let mutable sum = baseValue
+        for _ in 1..aceCount do
+            sum <- sum + evaluateAce sum
+        sum
+
+let rankToValue rank =
     match rank with
     | Ace ->
-        1 // ※現在のルールでは A=1 固定
+        Value (0, 1)
 
     | Rank n ->
-        n
+        Value (n, 0)
 
     | Jack
     | Queen
     | King ->
-        10
+        Value (10, 0)
 
-let cardToScore card =
+let cardToValue card =
     match card with
     | Card (_suit, rank) ->
-        rankToScore rank
+        rankToValue rank
 
 let handToScore (hand: Hand) =
-    Seq.sumBy cardToScore hand
+    let mutable value = noValue ()
+    for card in hand do
+        value <- addValue value (cardToValue card)
+    evaluate value
 
 // -----------------------------------------------
 // ゲームの勝敗
